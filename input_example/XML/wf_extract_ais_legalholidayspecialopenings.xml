@@ -1,0 +1,139 @@
+<!-- 
+    Sub-Workflow defintion file
+    Extracts legalholidayspecialopenings table from AIS Reporting
+-->
+
+<workflow-app name="wf_extract_ais_legalholidayspecialopenings" xmlns="uri:oozie:workflow:0.5">
+
+    <global>
+        <job-tracker>${jobTracker}</job-tracker>
+        <name-node>${nameNode}</name-node>
+        <configuration>
+            <property>
+                <name>oozie.launcher.mapred.job.queue.name</name>
+                <value>${queueName}</value>
+            </property>
+            <property>
+                <name>oozie.worker.mapred.job.queue.name</name>
+                <value>${queueName}</value>
+            </property>
+            <property>
+                <name>mapred.job.queue.name</name>
+                <value>${queueName}</value>
+            </property>
+        </configuration>
+    </global>
+
+    <credentials>
+        <credential name="hcat_cred" type="hcat">
+            <property>
+                <name>hcat.metastore.uri</name>
+                <value>${hcat_url}</value>
+            </property> 
+            <property> 
+                <name>hcat.metastore.principal</name>
+                <value>${hcat_principal}</value>
+            </property>
+        </credential>
+        <credential name="hive_cred" type="hive2">
+            <property>
+                <name>hive2.jdbc.url</name>
+                <value>${hive_url}</value>
+            </property> 
+            <property> 
+                <name>hive2.server.principal</name>
+                <value>${hive_principal}</value>
+            </property>
+        </credential>
+    </credentials>
+  
+    <start to="hdfs_delete_temp_folders"/>
+
+    <!-- FS Action. Delete temp folders, if previous job fails -->
+    <action name="hdfs_delete_temp_folders">
+        <fs>
+            <delete path="/tmp/${DATALAKE_ENV}_extract_ais_legalholidayspecialopenings"/>
+        </fs>
+        <ok to="sqoop_import_legalholidayspecialopenings"/>
+        <error to="kill_email"/>
+    </action>
+    
+    <!-- Sqoop Action. Extract table "legalholidayspecialopenings" --> 
+    <action name="sqoop_import_legalholidayspecialopenings" cred="hcat_cred">
+        <sqoop xmlns="uri:oozie:sqoop-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <job-xml>${hive_site_xml}</job-xml>
+            <arg>import</arg>
+            <arg>-Dhadoop.security.credential.provider.path=jceks://hdfs${aisPasswordFile}</arg>
+		    <arg>-Dmapred.job.queue.name=${queueName}</arg>
+            <arg>--connect</arg>
+            <arg>${aisURL}</arg>
+            <arg>--username</arg>
+            <arg>${aisUsername}</arg>
+            <arg>--password-alias</arg>
+            <arg>ais.password.alias</arg>
+            <arg>--query</arg>
+            <arg>"SELECT country_sid, objno, legalholidaydate, isclosed, hasspecialopening, openinghoursfrom1, openinghoursto1, openinghoursfrom2, openinghoursto2, comment, change_date, change_user, create_date, create_user, update_id FROM ${aisSchema}.dbo.LegalHolidaySpecialOpenings WHERE $CONDITIONS"</arg>
+            <arg>--target-dir</arg>
+		    <arg>/tmp/${DATALAKE_ENV}_extract_ais_legalholidayspecialopenings</arg>
+            <arg>--options-file</arg>
+            <arg>extract_ais_legalholidayspecialopenings.sqoop</arg>
+            <file>extract_ais_legalholidayspecialopenings.sqoop</file>
+        </sqoop>
+        <ok to="hive2_insert_overwrite_landing_legalholidayspecialopenings"/>
+        <error to="kill_email"/>
+    </action>    
+
+    <action name="hive2_insert_overwrite_landing_legalholidayspecialopenings" cred="hive_cred">
+        <hive2 xmlns="uri:oozie:hive2-action:0.1">
+ 	        <jdbc-url>${hive_url}?mapred.job.queue.name=${queueName}</jdbc-url>
+            <script>process_extracted_ais_legalholidayspecialopenings.sql</script>
+            <param>DATALAKE_ENV=${DATALAKE_ENV}</param>
+        </hive2>
+        <ok to="compute-stats"/>
+        <error to="kill_email"/>
+    </action>
+
+        <action name="compute-stats">
+        <shell xmlns="uri:oozie:shell-action:0.1">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>compute_stats_master.sh</exec> 
+            <argument>${DATALAKE_ENV}</argument>  
+            <argument>${cmdImpalaShell}</argument>            
+            <argument>legalholidayspecialopenings</argument>
+            <file>../compute_stats_master.sh</file>
+            <!-- <file>/user/${user}/${user}.keytab#user.keytab</file>-->
+            <file>/app_${DATALAKE_ENV}/credentials/${user}.keytab#user.keytab</file>
+        </shell>
+        <ok to="hdfs_delete_temp_folders_2"/>
+        <error to="kill_email"/>
+    </action>
+
+    <!-- FS Action. Delete temp folders -->
+    <action name="hdfs_delete_temp_folders_2">
+        <fs>
+            <delete path="/tmp/${DATALAKE_ENV}_extract_ais_legalholidayspecialopenings"/>
+        </fs>
+        <ok to="end"/>
+        <error to="kill_email"/>
+    </action>
+	
+    <action name="kill_email">
+        <email xmlns="uri:oozie:email-action:0.1">
+            <to>${emailList}</to>
+            <subject>Datalake: workflow ${wf:name()} failed for ${DATALAKE_ENV} environment</subject>
+            <body>Datalake: workflow ${wf:name()} failed: ${wf:id()} for ${DATALAKE_ENV} environment</body>
+        </email>
+        <ok to="fail"/>
+        <error to="fail"/>
+    </action>
+
+    <kill name="fail">
+        <message>Failed, Error Message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+    
+    <end name="end"/>
+
+</workflow-app>

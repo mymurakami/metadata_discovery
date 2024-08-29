@@ -1,0 +1,552 @@
+﻿,Query_sql,Output_Create_Table,Output_Insert,Variables_sql,Partition_sql,Function_sql,File_Location_sql,File_Name_sql,Table_Name,Query_xml,Output_XML,Variables_xml,Partition_xml,Function_xml,File_Location_xml,File_Name_xml,Partition,Function,Variables
+0,"CREATE TABLE IF NOT EXISTS db_work_§DATALAKE_ENV§.ais_legalholidayspecialopenings_tmp_et(
+country_sid STRING,
+objno STRING,
+legalholidaydate STRING,
+isclosed STRING,
+hasspecialopening STRING,
+openinghoursfrom1 STRING,
+openinghoursto1 STRING,
+openinghoursfrom2 STRING,
+openinghoursto2 STRING,
+comment STRING,
+change_date STRING,
+change_user STRING,
+create_date STRING,
+create_user STRING,
+update_id STRING
+) 
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '001'
+LOCATION '/tmp/§DATALAKE_ENV§_extract_ais_legalholidayspecialopenings';
+
+SET hive.exec.dynamic.partition.mode=nonstrict;
+
+SET mapred.output.compression.codec=org.apache.hadoop.io.compress.SnappyCodec; 
+SET parquet.compression=snappy;
+
+--replace entire table (no partitions)
+INSERT OVERWRITE TABLE db_ais_§DATALAKE_ENV§.la_ais_legalholidayspecialopenings_et PARTITION (business_date)
+SELECT 
+country_sid,
+objno,
+legalholidaydate,
+isclosed,
+hasspecialopening,
+openinghoursfrom1,
+openinghoursto1,
+openinghoursfrom2,
+openinghoursto2,
+comment,
+change_date,
+change_user,
+create_date,
+create_user,
+update_id,
+regexp_replace(substr(CAST(current_timestamp() AS STRING), 1, 10), '-', '') AS business_date
+  FROM db_work_§DATALAKE_ENV§.ais_legalholidayspecialopenings_tmp_et;
+
+MSCK REPAIR TABLE db_ais_§DATALAKE_ENV§.la_ais_legalholidayspecialopenings_et;
+
+DROP TABLE db_work_§DATALAKE_ENV§.ais_legalholidayspecialopenings_tmp_et;","{'header': {'type_query': 'create table', 'number_tables': 1, 'tables': ['db_work_§DATALAKE_ENV§.ais_legalholidayspecialopenings_tmp_et'], 'number_subqueries': 0, 'contains_join': [], 'contains_where': []}, 'table': 'db_work_§DATALAKE_ENV§.ais_legalholidayspecialopenings_tmp_et', 'columns': [{'name': 'country_sid', 'type': ['string', ''], 'null': False}, {'name': 'objno', 'type': ['string', ''], 'null': False}, {'name': 'legalholidaydate', 'type': ['string', ''], 'null': False}, {'name': 'isclosed', 'type': ['string', ''], 'null': False}, {'name': 'hasspecialopening', 'type': ['string', ''], 'null': False}, {'name': 'openinghoursfrom1', 'type': ['string', ''], 'null': False}, {'name': 'openinghoursto1', 'type': ['string', ''], 'null': False}, {'name': 'openinghoursfrom2', 'type': ['string', ''], 'null': False}, {'name': 'openinghoursto2', 'type': ['string', ''], 'null': False}, {'name': 'comment', 'type': ['string', ''], 'null': False}, {'name': 'change_date', 'type': ['string', ''], 'null': False}, {'name': 'change_user', 'type': ['string', ''], 'null': False}, {'name': 'create_date', 'type': ['string', ''], 'null': False}, {'name': 'create_user', 'type': ['string', ''], 'null': False}, {'name': 'update_id', 'type': ['string', ''], 'null': False}]}","{'header': {'type_query': 'insert', 'number_tables': 2, 'tables': ['DB_AIS_§DATALAKE_ENV§.LA_AIS_LEGALHOLIDAYSPECIALOPENINGS_ET', 'DB_WORK_§DATALAKE_ENV§.AIS_LEGALHOLIDAYSPECIALOPENINGS_TMP_ET'], 'number_subqueries': 0, 'contains_join': False, 'contains_where': False}, 'target_columns': '', 'target_table': '', 'source': {'source_id': 0, 'source_columns': ['COUNTRY_SID', 'OBJNO', 'LEGALHOLIDAYDATE', 'ISCLOSED', 'HASSPECIALOPENING', 'OPENINGHOURSFROM1', 'OPENINGHOURSTO1', 'OPENINGHOURSFROM2', 'OPENINGHOURSTO2', 'COMMENT', 'CHANGE_DATE', 'CHANGE_USER', 'CREATE_DATE', 'CREATE_USER', 'UPDATE_ID', ""REGEXP_REPLACE(SUBSTR(CAST(CURRENT_TIMESTAMP() AS STRING), 1, 10), '-', '') AS BUSINESS_DATE""], 'source_table': ['DB_WORK_§DATALAKE_ENV§.AIS_LEGALHOLIDAYSPECIALOPENINGS_TMP_ET', ''], 'source_join': [], 'source_condition': [], 'source_groupby': [], 'source_having': [], 'source_orderby': []}}",['DATALAKE_ENV'],['BUSINESS_DATE'],"['REGEXP_REPLACE', 'SUBSTR', 'CAST', 'CURRENT_TIMESTAMP']",SQL/process_extracted_ais_legalholidayspecialopenings.sql,process_extracted_ais_legalholidayspecialopenings.sql,LEGALHOLIDAYSPECIALOPENINGS," SELECT country_sid, objno, legalholidaydate, isclosed, hasspecialopening, openinghoursfrom1, openinghoursto1, openinghoursfrom2, openinghoursto2, comment, change_date, change_user, create_date, create_user, update_id FROM §aisSchema§.dbo.LegalHolidaySpecialOpenings","{'header': {'type_query': 'select', 'number_tables': 1, 'tables': ['§aisSchema§.dbo.LegalHolidaySpecialOpenings'], 'number_subqueries': 0, 'contains_join': False, 'contains_where': False}, 'source': {'source_id': 0, 'source_columns': ['country_sid', 'objno', 'legalholidaydate', 'isclosed', 'hasspecialopening', 'openinghoursfrom1', 'openinghoursto1', 'openinghoursfrom2', 'openinghoursto2', 'comment', 'change_date', 'change_user', 'create_date', 'create_user', 'update_id'], 'source_table': ['§aisSchema§.dbo.LegalHolidaySpecialOpenings', ''], 'source_join': [], 'source_condition': [], 'source_groupby': [], 'source_having': [], 'source_orderby': []}}",['aisSchema'],[],[],XML/wf_extract_ais_legalholidayspecialopenings.xml,wf_extract_ais_legalholidayspecialopenings.xml,['BUSINESS_DATE'],"['REGEXP_REPLACE', 'SUBSTR', 'CAST', 'CURRENT_TIMESTAMP']","['DATALAKE_ENV', 'aisSchema']"
+1,"CREATE TABLE IF NOT EXISTS db_work_§DATALAKE_ENV§.ais_division_tmp_et(
+country_sid STRING,
+divno STRING,
+street1 STRING,
+street2 STRING,
+zipcode STRING,
+city1 STRING,
+city2 STRING,
+name STRING,
+namelong STRING,
+divid STRING,
+taxno STRING,
+sortid STRING,
+isinstatistic STRING,
+vatregno STRING,
+dunz_iln STRING,
+org_type STRING,
+rentdivno STRING,
+isclosed STRING,
+opendt STRING,
+closedt STRING,
+operationalopendate STRING,
+isaheaddivision STRING,
+aheadcutoverdate STRING
+) 
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '001'
+LOCATION '/tmp/§DATALAKE_ENV§_extract_ais_division';
+
+SET hive.exec.dynamic.partition.mode=nonstrict;
+
+SET mapred.output.compression.codec=org.apache.hadoop.io.compress.SnappyCodec; 
+SET parquet.compression=snappy;
+
+--replace entire table (no partitions)
+INSERT OVERWRITE TABLE db_ais_§DATALAKE_ENV§.la_ais_division_et PARTITION (business_date)
+SELECT 
+country_sid,
+divno,
+street1,
+street2,
+zipcode,
+city1,
+city2,
+name,
+namelong,
+divid,
+taxno,
+sortid,
+isinstatistic,
+vatregno,
+dunz_iln,
+org_type,
+rentdivno,
+isclosed,
+opendt,
+closedt,
+operationalopendate,
+isaheaddivision,
+aheadcutoverdate,
+regexp_replace(substr(CAST(current_timestamp() AS STRING), 1, 10), '-', '') AS business_date
+  FROM db_work_§DATALAKE_ENV§.ais_division_tmp_et;
+
+MSCK REPAIR TABLE db_ais_§DATALAKE_ENV§.la_ais_division_et;
+
+DROP TABLE db_work_§DATALAKE_ENV§.ais_division_tmp_et;","{'header': {'type_query': 'create table', 'number_tables': 1, 'tables': ['db_work_§DATALAKE_ENV§.ais_division_tmp_et'], 'number_subqueries': 0, 'contains_join': [], 'contains_where': []}, 'table': 'db_work_§DATALAKE_ENV§.ais_division_tmp_et', 'columns': [{'name': 'country_sid', 'type': ['string', ''], 'null': False}, {'name': 'divno', 'type': ['string', ''], 'null': False}, {'name': 'street1', 'type': ['string', ''], 'null': False}, {'name': 'street2', 'type': ['string', ''], 'null': False}, {'name': 'zipcode', 'type': ['string', ''], 'null': False}, {'name': 'city1', 'type': ['string', ''], 'null': False}, {'name': 'city2', 'type': ['string', ''], 'null': False}, {'name': 'name', 'type': ['string', ''], 'null': False}, {'name': 'namelong', 'type': ['string', ''], 'null': False}, {'name': 'divid', 'type': ['string', ''], 'null': False}, {'name': 'taxno', 'type': ['string', ''], 'null': False}, {'name': 'sortid', 'type': ['string', ''], 'null': False}, {'name': 'isinstatistic', 'type': ['string', ''], 'null': False}, {'name': 'vatregno', 'type': ['string', ''], 'null': False}, {'name': 'dunz_iln', 'type': ['string', ''], 'null': False}, {'name': 'org_type', 'type': ['string', ''], 'null': False}, {'name': 'rentdivno', 'type': ['string', ''], 'null': False}, {'name': 'isclosed', 'type': ['string', ''], 'null': False}, {'name': 'opendt', 'type': ['string', ''], 'null': False}, {'name': 'closedt', 'type': ['string', ''], 'null': False}, {'name': 'operationalopendate', 'type': ['string', ''], 'null': False}, {'name': 'isaheaddivision', 'type': ['string', ''], 'null': False}, {'name': 'aheadcutoverdate', 'type': ['string', ''], 'null': False}]}","{'header': {'type_query': 'insert', 'number_tables': 2, 'tables': ['DB_AIS_§DATALAKE_ENV§.LA_AIS_DIVISION_ET', 'DB_WORK_§DATALAKE_ENV§.AIS_DIVISION_TMP_ET'], 'number_subqueries': 0, 'contains_join': False, 'contains_where': False}, 'target_columns': '', 'target_table': '', 'source': {'source_id': 0, 'source_columns': ['COUNTRY_SID', 'DIVNO', 'STREET1', 'STREET2', 'ZIPCODE', 'CITY1', 'CITY2', 'NAME', 'NAMELONG', 'DIVID', 'TAXNO', 'SORTID', 'ISINSTATISTIC', 'VATREGNO', 'DUNZ_ILN', 'ORG_TYPE', 'RENTDIVNO', 'ISCLOSED', 'OPENDT', 'CLOSEDT', 'OPERATIONALOPENDATE', 'ISAHEADDIVISION', 'AHEADCUTOVERDATE', ""REGEXP_REPLACE(SUBSTR(CAST(CURRENT_TIMESTAMP() AS STRING), 1, 10), '-', '') AS BUSINESS_DATE""], 'source_table': ['DB_WORK_§DATALAKE_ENV§.AIS_DIVISION_TMP_ET', ''], 'source_join': [], 'source_condition': [], 'source_groupby': [], 'source_having': [], 'source_orderby': []}}",['DATALAKE_ENV'],['BUSINESS_DATE'],"['REGEXP_REPLACE', 'SUBSTR', 'CAST', 'CURRENT_TIMESTAMP']",SQL/process_extracted_ais_division.sql,process_extracted_ais_division.sql,DIVISION," SELECT country_sid, divno, street1, street2, zipcode, city1, city2, name, namelong, divid, taxno, sortid, isinstatistic, vatregno, dunz_iln, org_type, rentdivno, isclosed, opendt, closedt, operationalopendate, isaheaddivision, aheadcutoverdate FROM §aisSchema§.dbo.DIVISION","{'header': {'type_query': 'select', 'number_tables': 1, 'tables': ['§aisSchema§.dbo.DIVISION'], 'number_subqueries': 0, 'contains_join': False, 'contains_where': False}, 'source': {'source_id': 0, 'source_columns': ['country_sid', 'divno', 'street1', 'street2', 'zipcode', 'city1', 'city2', 'name', 'namelong', 'divid', 'taxno', 'sortid', 'isinstatistic', 'vatregno', 'dunz_iln', 'org_type', 'rentdivno', 'isclosed', 'opendt', 'closedt', 'operationalopendate', 'isaheaddivision', 'aheadcutoverdate'], 'source_table': ['§aisSchema§.dbo.DIVISION', ''], 'source_join': [], 'source_condition': [], 'source_groupby': [], 'source_having': [], 'source_orderby': []}}",['aisSchema'],[],[],XML/wf_extract_ais_division.xml,wf_extract_ais_division.xml,['BUSINESS_DATE'],"['REGEXP_REPLACE', 'SUBSTR', 'CAST', 'CURRENT_TIMESTAMP']","['DATALAKE_ENV', 'aisSchema']"
+2,"CREATE TABLE IF NOT EXISTS db_work_§DATALAKE_ENV§.ais_objdata_tmp_et(
+country_sid STRING,
+objno STRING,
+validfrom STRING,
+validto STRING,
+storeno STRING,
+typeid STRING,
+typeid_isos STRING,
+delivcmp STRING,
+delivdt STRING,
+takecmp STRING,
+takedt STRING,
+proprid STRING,
+propid STRING,
+takeobj STRING,
+delivobj STRING,
+areakey STRING,
+gradid STRING,
+employds STRING,
+employsv STRING,
+employst STRING,
+assistant1 STRING,
+assistant2 STRING,
+assistant3 STRING,
+substitut1 STRING,
+substitut2 STRING,
+substitut3 STRING,
+buiapply STRING,
+constrdt STRING,
+planopen STRING,
+opendt STRING,
+planclos STRING,
+closedt STRING,
+ownused STRING,
+zoneyn STRING,
+unsettl STRING,
+saleddt STRING,
+descript STRING,
+street STRING,
+zipcode STRING,
+statzipc STRING,
+town STRING,
+postbox STRING,
+telefon STRING,
+telefax STRING,
+surfause STRING,
+surfatot STRING,
+buigrnd STRING,
+surfatra STRING,
+carpkout STRING,
+areauset STRING,
+areauses STRING,
+surfaext STRING,
+surfasis STRING,
+volbuild STRING,
+cstplid STRING,
+dcstplid STRING,
+depreplc STRING,
+areawhse STRING,
+areaused STRING,
+areausea STRING,
+areadepg STRING,
+areadepn STRING,
+areacst STRING,
+areadcst STRING,
+surfasid STRING,
+reserve STRING,
+tmp_closedt STRING,
+tmp_opendt STRING,
+roofid STRING,
+change_date STRING,
+change_user STRING,
+create_date STRING,
+create_user STRING,
+update_id STRING,
+subleasedparkingspaces STRING,
+legalentity STRING,
+suitable4disabledpersons STRING,
+taxfree STRING,
+carpark STRING,
+bakeoff STRING,
+beer STRING,
+wine STRING,
+petrolstation STRING,
+nooftills STRING,
+noofdepositmachines STRING,
+servicehotlinenumber STRING,
+geographicalcoordinatesstorelongtitude STRING,
+geographicalcoordinatesstorelatitude STRING,
+openinghoursmondayfrom1 STRING,
+openinghoursmondayto1 STRING,
+openinghoursmondayfrom2 STRING,
+openinghoursmondayto2 STRING,
+openinghourstuesdayfrom1 STRING,
+openinghourstuesdayto1 STRING,
+openinghourstuesdayfrom2 STRING,
+openinghourstuesdayto2 STRING,
+openinghourswednesdayfrom1 STRING,
+openinghourswednesdayto1 STRING,
+openinghourswednesdayfrom2 STRING,
+openinghourswednesdayto2 STRING,
+openinghoursthursdayfrom1 STRING,
+openinghoursthursdayto1 STRING,
+openinghoursthursdayfrom2 STRING,
+openinghoursthursdayto2 STRING,
+openinghoursfridayfrom1 STRING,
+openinghoursfridayto1 STRING,
+openinghoursfridayfrom2 STRING,
+openinghoursfridayto2 STRING,
+openinghourssaturdayfrom1 STRING,
+openinghourssaturdayto1 STRING,
+openinghourssaturdayfrom2 STRING,
+openinghourssaturdayto2 STRING,
+openinghourssundayfrom1 STRING,
+openinghourssundayto1 STRING,
+openinghourssundayfrom2 STRING,
+openinghourssundayto2 STRING,
+specialopeninghoursonmonday STRING,
+specialopeninghoursontuesday STRING,
+specialopeninghoursonwednesday STRING,
+specialopeninghoursonthursday STRING,
+specialopeninghoursonfriday STRING,
+specialopeninghoursonsaturday STRING,
+specialopeninghoursonsunday STRING,
+specialopeninghourscomment STRING,
+announcementgrandopening STRING,
+objectcomment STRING,
+notation STRING,
+planopenexternalusage STRING,
+openexternalusage STRING,
+plancloseexternalusage STRING,
+closeexternalusage STRING,
+objectusageid STRING,
+relatedobjectno STRING,
+subaccountno STRING,
+liquorlicensecommencementdate STRING,
+reconstructionafterdemolition STRING,
+demolitiondate STRING,
+additionalphonenumber STRING,
+streetlong STRING,
+dataowner STRING,
+zones STRING
+) 
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '001'
+LOCATION '/tmp/§DATALAKE_ENV§_extract_ais_objdata';
+
+SET hive.exec.dynamic.partition.mode=nonstrict;
+
+SET mapred.output.compression.codec=org.apache.hadoop.io.compress.SnappyCodec; 
+SET parquet.compression=snappy;
+
+--replace entire table (no partitions)
+INSERT OVERWRITE TABLE db_ais_§DATALAKE_ENV§.la_ais_objdata_et PARTITION (business_date)
+SELECT 
+country_sid,
+objno,
+validfrom,
+validto,
+storeno,
+typeid,
+typeid_isos,
+delivcmp,
+delivdt,
+takecmp,
+takedt,
+proprid,
+propid,
+takeobj,
+delivobj,
+areakey,
+gradid,
+CASE WHEN country_sid NOT IN ('3', '6')
+THEN mask_show_last_n(employds, 3, 'X', 'X', 'X')
+ELSE employds END AS employds,
+CASE WHEN country_sid NOT IN ('3', '6')
+THEN mask_show_last_n(employsv, 3, 'X', 'X', 'X')
+ELSE employsv END AS employsv,
+CASE WHEN country_sid NOT IN ('3', '6')
+THEN mask_show_last_n(employst, 3, 'X', 'X', 'X')
+ELSE employst END AS employst,
+assistant1,
+assistant2,
+assistant3,
+substitut1,
+substitut2,
+substitut3,
+buiapply,
+constrdt,
+planopen,
+opendt,
+planclos,
+closedt,
+ownused,
+zoneyn,
+unsettl,
+saleddt,
+descript,
+street,
+zipcode,
+statzipc,
+town,
+postbox,
+telefon,
+telefax,
+surfause,
+surfatot,
+buigrnd,
+surfatra,
+carpkout,
+areauset,
+areauses,
+surfaext,
+surfasis,
+volbuild,
+cstplid,
+dcstplid,
+depreplc,
+areawhse,
+areaused,
+areausea,
+areadepg,
+areadepn,
+areacst,
+areadcst,
+surfasid,
+reserve,
+tmp_closedt,
+tmp_opendt,
+roofid,
+change_date,
+change_user,
+create_date,
+create_user,
+update_id,
+subleasedparkingspaces,
+legalentity,
+suitable4disabledpersons,
+taxfree,
+carpark,
+bakeoff,
+beer,
+wine,
+petrolstation,
+nooftills,
+noofdepositmachines,
+servicehotlinenumber,
+geographicalcoordinatesstorelongtitude,
+geographicalcoordinatesstorelatitude,
+openinghoursmondayfrom1,
+openinghoursmondayto1,
+openinghoursmondayfrom2,
+openinghoursmondayto2,
+openinghourstuesdayfrom1,
+openinghourstuesdayto1,
+openinghourstuesdayfrom2,
+openinghourstuesdayto2,
+openinghourswednesdayfrom1,
+openinghourswednesdayto1,
+openinghourswednesdayfrom2,
+openinghourswednesdayto2,
+openinghoursthursdayfrom1,
+openinghoursthursdayto1,
+openinghoursthursdayfrom2,
+openinghoursthursdayto2,
+openinghoursfridayfrom1,
+openinghoursfridayto1,
+openinghoursfridayfrom2,
+openinghoursfridayto2,
+openinghourssaturdayfrom1,
+openinghourssaturdayto1,
+openinghourssaturdayfrom2,
+openinghourssaturdayto2,
+openinghourssundayfrom1,
+openinghourssundayto1,
+openinghourssundayfrom2,
+openinghourssundayto2,
+specialopeninghoursonmonday,
+specialopeninghoursontuesday,
+specialopeninghoursonwednesday,
+specialopeninghoursonthursday,
+specialopeninghoursonfriday,
+specialopeninghoursonsaturday,
+specialopeninghoursonsunday,
+specialopeninghourscomment,
+announcementgrandopening,
+objectcomment,
+notation,
+planopenexternalusage,
+openexternalusage,
+plancloseexternalusage,
+closeexternalusage,
+objectusageid,
+relatedobjectno,
+subaccountno,
+liquorlicensecommencementdate,
+reconstructionafterdemolition,
+demolitiondate,
+additionalphonenumber,
+streetlong,
+dataowner,
+zones,
+regexp_replace(substr(CAST(current_timestamp() AS STRING), 1, 10), '-', '') AS business_date
+  FROM db_work_§DATALAKE_ENV§.ais_objdata_tmp_et;
+
+MSCK REPAIR TABLE db_ais_§DATALAKE_ENV§.la_ais_objdata_et;
+
+DROP TABLE db_work_§DATALAKE_ENV§.ais_objdata_tmp_et;","{'header': {'type_query': 'create table', 'number_tables': 1, 'tables': ['db_work_§DATALAKE_ENV§.ais_objdata_tmp_et'], 'number_subqueries': 0, 'contains_join': [], 'contains_where': []}, 'table': 'db_work_§DATALAKE_ENV§.ais_objdata_tmp_et', 'columns': [{'name': 'country_sid', 'type': ['string', ''], 'null': False}, {'name': 'objno', 'type': ['string', ''], 'null': False}, {'name': 'validfrom', 'type': ['string', ''], 'null': False}, {'name': 'validto', 'type': ['string', ''], 'null': False}, {'name': 'storeno', 'type': ['string', ''], 'null': False}, {'name': 'typeid', 'type': ['string', ''], 'null': False}, {'name': 'typeid_isos', 'type': ['string', ''], 'null': False}, {'name': 'delivcmp', 'type': ['string', ''], 'null': False}, {'name': 'delivdt', 'type': ['string', ''], 'null': False}, {'name': 'takecmp', 'type': ['string', ''], 'null': False}, {'name': 'takedt', 'type': ['string', ''], 'null': False}, {'name': 'proprid', 'type': ['string', ''], 'null': False}, {'name': 'propid', 'type': ['string', ''], 'null': False}, {'name': 'takeobj', 'type': ['string', ''], 'null': False}, {'name': 'delivobj', 'type': ['string', ''], 'null': False}, {'name': 'areakey', 'type': ['string', ''], 'null': False}, {'name': 'gradid', 'type': ['string', ''], 'null': False}, {'name': 'employds', 'type': ['string', ''], 'null': False}, {'name': 'employsv', 'type': ['string', ''], 'null': False}, {'name': 'employst', 'type': ['string', ''], 'null': False}, {'name': 'assistant1', 'type': ['string', ''], 'null': False}, {'name': 'assistant2', 'type': ['string', ''], 'null': False}, {'name': 'assistant3', 'type': ['string', ''], 'null': False}, {'name': 'substitut1', 'type': ['string', ''], 'null': False}, {'name': 'substitut2', 'type': ['string', ''], 'null': False}, {'name': 'substitut3', 'type': ['string', ''], 'null': False}, {'name': 'buiapply', 'type': ['string', ''], 'null': False}, {'name': 'constrdt', 'type': ['string', ''], 'null': False}, {'name': 'planopen', 'type': ['string', ''], 'null': False}, {'name': 'opendt', 'type': ['string', ''], 'null': False}, {'name': 'planclos', 'type': ['string', ''], 'null': False}, {'name': 'closedt', 'type': ['string', ''], 'null': False}, {'name': 'ownused', 'type': ['string', ''], 'null': False}, {'name': 'zoneyn', 'type': ['string', ''], 'null': False}, {'name': 'unsettl', 'type': ['string', ''], 'null': False}, {'name': 'saleddt', 'type': ['string', ''], 'null': False}, {'name': 'descript', 'type': ['string', ''], 'null': False}, {'name': 'street', 'type': ['string', ''], 'null': False}, {'name': 'zipcode', 'type': ['string', ''], 'null': False}, {'name': 'statzipc', 'type': ['string', ''], 'null': False}, {'name': 'town', 'type': ['string', ''], 'null': False}, {'name': 'postbox', 'type': ['string', ''], 'null': False}, {'name': 'telefon', 'type': ['string', ''], 'null': False}, {'name': 'telefax', 'type': ['string', ''], 'null': False}, {'name': 'surfause', 'type': ['string', ''], 'null': False}, {'name': 'surfatot', 'type': ['string', ''], 'null': False}, {'name': 'buigrnd', 'type': ['string', ''], 'null': False}, {'name': 'surfatra', 'type': ['string', ''], 'null': False}, {'name': 'carpkout', 'type': ['string', ''], 'null': False}, {'name': 'areauset', 'type': ['string', ''], 'null': False}, {'name': 'areauses', 'type': ['string', ''], 'null': False}, {'name': 'surfaext', 'type': ['string', ''], 'null': False}, {'name': 'surfasis', 'type': ['string', ''], 'null': False}, {'name': 'volbuild', 'type': ['string', ''], 'null': False}, {'name': 'cstplid', 'type': ['string', ''], 'null': False}, {'name': 'dcstplid', 'type': ['string', ''], 'null': False}, {'name': 'depreplc', 'type': ['string', ''], 'null': False}, {'name': 'areawhse', 'type': ['string', ''], 'null': False}, {'name': 'areaused', 'type': ['string', ''], 'null': False}, {'name': 'areausea', 'type': ['string', ''], 'null': False}, {'name': 'areadepg', 'type': ['string', ''], 'null': False}, {'name': 'areadepn', 'type': ['string', ''], 'null': False}, {'name': 'areacst', 'type': ['string', ''], 'null': False}, {'name': 'areadcst', 'type': ['string', ''], 'null': False}, {'name': 'surfasid', 'type': ['string', ''], 'null': False}, {'name': 'reserve', 'type': ['string', ''], 'null': False}, {'name': 'tmp_closedt', 'type': ['string', ''], 'null': False}, {'name': 'tmp_opendt', 'type': ['string', ''], 'null': False}, {'name': 'roofid', 'type': ['string', ''], 'null': False}, {'name': 'change_date', 'type': ['string', ''], 'null': False}, {'name': 'change_user', 'type': ['string', ''], 'null': False}, {'name': 'create_date', 'type': ['string', ''], 'null': False}, {'name': 'create_user', 'type': ['string', ''], 'null': False}, {'name': 'update_id', 'type': ['string', ''], 'null': False}, {'name': 'subleasedparkingspaces', 'type': ['string', ''], 'null': False}, {'name': 'legalentity', 'type': ['string', ''], 'null': False}, {'name': 'suitable4disabledpersons', 'type': ['string', ''], 'null': False}, {'name': 'taxfree', 'type': ['string', ''], 'null': False}, {'name': 'carpark', 'type': ['string', ''], 'null': False}, {'name': 'bakeoff', 'type': ['string', ''], 'null': False}, {'name': 'beer', 'type': ['string', ''], 'null': False}, {'name': 'wine', 'type': ['string', ''], 'null': False}, {'name': 'petrolstation', 'type': ['string', ''], 'null': False}, {'name': 'nooftills', 'type': ['string', ''], 'null': False}, {'name': 'noofdepositmachines', 'type': ['string', ''], 'null': False}, {'name': 'servicehotlinenumber', 'type': ['string', ''], 'null': False}, {'name': 'geographicalcoordinatesstorelongtitude', 'type': ['string', ''], 'null': False}, {'name': 'geographicalcoordinatesstorelatitude', 'type': ['string', ''], 'null': False}, {'name': 'openinghoursmondayfrom1', 'type': ['string', ''], 'null': False}, {'name': 'openinghoursmondayto1', 'type': ['string', ''], 'null': False}, {'name': 'openinghoursmondayfrom2', 'type': ['string', ''], 'null': False}, {'name': 'openinghoursmondayto2', 'type': ['string', ''], 'null': False}, {'name': 'openinghourstuesdayfrom1', 'type': ['string', ''], 'null': False}, {'name': 'openinghourstuesdayto1', 'type': ['string', ''], 'null': False}, {'name': 'openinghourstuesdayfrom2', 'type': ['string', ''], 'null': False}, {'name': 'openinghourstuesdayto2', 'type': ['string', ''], 'null': False}, {'name': 'openinghourswednesdayfrom1', 'type': ['string', ''], 'null': False}, {'name': 'openinghourswednesdayto1', 'type': ['string', ''], 'null': False}, {'name': 'openinghourswednesdayfrom2', 'type': ['string', ''], 'null': False}, {'name': 'openinghourswednesdayto2', 'type': ['string', ''], 'null': False}, {'name': 'openinghoursthursdayfrom1', 'type': ['string', ''], 'null': False}, {'name': 'openinghoursthursdayto1', 'type': ['string', ''], 'null': False}, {'name': 'openinghoursthursdayfrom2', 'type': ['string', ''], 'null': False}, {'name': 'openinghoursthursdayto2', 'type': ['string', ''], 'null': False}, {'name': 'openinghoursfridayfrom1', 'type': ['string', ''], 'null': False}, {'name': 'openinghoursfridayto1', 'type': ['string', ''], 'null': False}, {'name': 'openinghoursfridayfrom2', 'type': ['string', ''], 'null': False}, {'name': 'openinghoursfridayto2', 'type': ['string', ''], 'null': False}, {'name': 'openinghourssaturdayfrom1', 'type': ['string', ''], 'null': False}, {'name': 'openinghourssaturdayto1', 'type': ['string', ''], 'null': False}, {'name': 'openinghourssaturdayfrom2', 'type': ['string', ''], 'null': False}, {'name': 'openinghourssaturdayto2', 'type': ['string', ''], 'null': False}, {'name': 'openinghourssundayfrom1', 'type': ['string', ''], 'null': False}, {'name': 'openinghourssundayto1', 'type': ['string', ''], 'null': False}, {'name': 'openinghourssundayfrom2', 'type': ['string', ''], 'null': False}, {'name': 'openinghourssundayto2', 'type': ['string', ''], 'null': False}, {'name': 'specialopeninghoursonmonday', 'type': ['string', ''], 'null': False}, {'name': 'specialopeninghoursontuesday', 'type': ['string', ''], 'null': False}, {'name': 'specialopeninghoursonwednesday', 'type': ['string', ''], 'null': False}, {'name': 'specialopeninghoursonthursday', 'type': ['string', ''], 'null': False}, {'name': 'specialopeninghoursonfriday', 'type': ['string', ''], 'null': False}, {'name': 'specialopeninghoursonsaturday', 'type': ['string', ''], 'null': False}, {'name': 'specialopeninghoursonsunday', 'type': ['string', ''], 'null': False}, {'name': 'specialopeninghourscomment', 'type': ['string', ''], 'null': False}, {'name': 'announcementgrandopening', 'type': ['string', ''], 'null': False}, {'name': 'objectcomment', 'type': ['string', ''], 'null': False}, {'name': 'notation', 'type': ['string', ''], 'null': False}, {'name': 'planopenexternalusage', 'type': ['string', ''], 'null': False}, {'name': 'openexternalusage', 'type': ['string', ''], 'null': False}, {'name': 'plancloseexternalusage', 'type': ['string', ''], 'null': False}, {'name': 'closeexternalusage', 'type': ['string', ''], 'null': False}, {'name': 'objectusageid', 'type': ['string', ''], 'null': False}, {'name': 'relatedobjectno', 'type': ['string', ''], 'null': False}, {'name': 'subaccountno', 'type': ['string', ''], 'null': False}, {'name': 'liquorlicensecommencementdate', 'type': ['string', ''], 'null': False}, {'name': 'reconstructionafterdemolition', 'type': ['string', ''], 'null': False}, {'name': 'demolitiondate', 'type': ['string', ''], 'null': False}, {'name': 'additionalphonenumber', 'type': ['string', ''], 'null': False}, {'name': 'streetlong', 'type': ['string', ''], 'null': False}, {'name': 'dataowner', 'type': ['string', ''], 'null': False}, {'name': 'zones', 'type': ['string', ''], 'null': False}]}","{'header': {'type_query': 'insert', 'number_tables': 2, 'tables': ['DB_AIS_§DATALAKE_ENV§.LA_AIS_OBJDATA_ET', 'DB_WORK_§DATALAKE_ENV§.AIS_OBJDATA_TMP_ET'], 'number_subqueries': 0, 'contains_join': False, 'contains_where': False}, 'target_columns': '', 'target_table': '', 'source': {'source_id': 0, 'source_columns': ['COUNTRY_SID', 'OBJNO', 'VALIDFROM', 'VALIDTO', 'STORENO', 'TYPEID', 'TYPEID_ISOS', 'DELIVCMP', 'DELIVDT', 'TAKECMP', 'TAKEDT', 'PROPRID', 'PROPID', 'TAKEOBJ', 'DELIVOBJ', 'AREAKEY', 'GRADID', ""CASE WHEN COUNTRY_SID NOT IN ('3', '6') THEN MASK_SHOW_LAST_N(EMPLOYDS, 3, 'X', 'X', 'X') ELSE EMPLOYDS END AS EMPLOYDS"", ""CASE WHEN COUNTRY_SID NOT IN ('3', '6') THEN MASK_SHOW_LAST_N(EMPLOYSV, 3, 'X', 'X', 'X') ELSE EMPLOYSV END AS EMPLOYSV"", ""CASE WHEN COUNTRY_SID NOT IN ('3', '6') THEN MASK_SHOW_LAST_N(EMPLOYST, 3, 'X', 'X', 'X') ELSE EMPLOYST END AS EMPLOYST"", 'ASSISTANT1', 'ASSISTANT2', 'ASSISTANT3', 'SUBSTITUT1', 'SUBSTITUT2', 'SUBSTITUT3', 'BUIAPPLY', 'CONSTRDT', 'PLANOPEN', 'OPENDT', 'PLANCLOS', 'CLOSEDT', 'OWNUSED', 'ZONEYN', 'UNSETTL', 'SALEDDT', 'DESCRIPT', 'STREET', 'ZIPCODE', 'STATZIPC', 'TOWN', 'POSTBOX', 'TELEFON', 'TELEFAX', 'SURFAUSE', 'SURFATOT', 'BUIGRND', 'SURFATRA', 'CARPKOUT', 'AREAUSET', 'AREAUSES', 'SURFAEXT', 'SURFASIS', 'VOLBUILD', 'CSTPLID', 'DCSTPLID', 'DEPREPLC', 'AREAWHSE', 'AREAUSED', 'AREAUSEA', 'AREADEPG', 'AREADEPN', 'AREACST', 'AREADCST', 'SURFASID', 'RESERVE', 'TMP_CLOSEDT', 'TMP_OPENDT', 'ROOFID', 'CHANGE_DATE', 'CHANGE_USER', 'CREATE_DATE', 'CREATE_USER', 'UPDATE_ID', 'SUBLEASEDPARKINGSPACES', 'LEGALENTITY', 'SUITABLE4DISABLEDPERSONS', 'TAXFREE', 'CARPARK', 'BAKEOFF', 'BEER', 'WINE', 'PETROLSTATION', 'NOOFTILLS', 'NOOFDEPOSITMACHINES', 'SERVICEHOTLINENUMBER', 'GEOGRAPHICALCOORDINATESSTORELONGTITUDE', 'GEOGRAPHICALCOORDINATESSTORELATITUDE', 'OPENINGHOURSMONDAYFROM1', 'OPENINGHOURSMONDAYTO1', 'OPENINGHOURSMONDAYFROM2', 'OPENINGHOURSMONDAYTO2', 'OPENINGHOURSTUESDAYFROM1', 'OPENINGHOURSTUESDAYTO1', 'OPENINGHOURSTUESDAYFROM2', 'OPENINGHOURSTUESDAYTO2', 'OPENINGHOURSWEDNESDAYFROM1', 'OPENINGHOURSWEDNESDAYTO1', 'OPENINGHOURSWEDNESDAYFROM2', 'OPENINGHOURSWEDNESDAYTO2', 'OPENINGHOURSTHURSDAYFROM1', 'OPENINGHOURSTHURSDAYTO1', 'OPENINGHOURSTHURSDAYFROM2', 'OPENINGHOURSTHURSDAYTO2', 'OPENINGHOURSFRIDAYFROM1', 'OPENINGHOURSFRIDAYTO1', 'OPENINGHOURSFRIDAYFROM2', 'OPENINGHOURSFRIDAYTO2', 'OPENINGHOURSSATURDAYFROM1', 'OPENINGHOURSSATURDAYTO1', 'OPENINGHOURSSATURDAYFROM2', 'OPENINGHOURSSATURDAYTO2', 'OPENINGHOURSSUNDAYFROM1', 'OPENINGHOURSSUNDAYTO1', 'OPENINGHOURSSUNDAYFROM2', 'OPENINGHOURSSUNDAYTO2', 'SPECIALOPENINGHOURSONMONDAY', 'SPECIALOPENINGHOURSONTUESDAY', 'SPECIALOPENINGHOURSONWEDNESDAY', 'SPECIALOPENINGHOURSONTHURSDAY', 'SPECIALOPENINGHOURSONFRIDAY', 'SPECIALOPENINGHOURSONSATURDAY', 'SPECIALOPENINGHOURSONSUNDAY', 'SPECIALOPENINGHOURSCOMMENT', 'ANNOUNCEMENTGRANDOPENING', 'OBJECTCOMMENT', 'NOTATION', 'PLANOPENEXTERNALUSAGE', 'OPENEXTERNALUSAGE', 'PLANCLOSEEXTERNALUSAGE', 'CLOSEEXTERNALUSAGE', 'OBJECTUSAGEID', 'RELATEDOBJECTNO', 'SUBACCOUNTNO', 'LIQUORLICENSECOMMENCEMENTDATE', 'RECONSTRUCTIONAFTERDEMOLITION', 'DEMOLITIONDATE', 'ADDITIONALPHONENUMBER', 'STREETLONG', 'DATAOWNER', 'ZONES', ""REGEXP_REPLACE(SUBSTR(CAST(CURRENT_TIMESTAMP() AS STRING), 1, 10), '-', '') AS BUSINESS_DATE""], 'source_table': ['DB_WORK_§DATALAKE_ENV§.AIS_OBJDATA_TMP_ET', ''], 'source_join': [], 'source_condition': [], 'source_groupby': [], 'source_having': [], 'source_orderby': []}}",['DATALAKE_ENV'],['BUSINESS_DATE'],"['CASE WHEN COUNTRY_SID NOT IN ', ' MASK_SHOW_LAST_N', 'CASE WHEN COUNTRY_SID NOT IN ', ' MASK_SHOW_LAST_N', 'CASE WHEN COUNTRY_SID NOT IN ', ' MASK_SHOW_LAST_N', 'REGEXP_REPLACE', 'SUBSTR', 'CAST', 'CURRENT_TIMESTAMP']",SQL/process_extracted_ais_objdata.sql,process_extracted_ais_objdata.sql,OBJDATA," SELECT country_sid, objno, validfrom, validto, storeno, typeid, typeid_isos, delivcmp, delivdt, takecmp, takedt, proprid, propid, takeobj, delivobj, areakey, gradid, employds, employsv, employst, assistant1, assistant2, assistant3, substitut1, substitut2, substitut3, buiapply, constrdt, planopen, opendt, planclos, closedt, ownused, zoneyn, unsettl, saleddt, descript, street, zipcode, statzipc, town, postbox, telefon, telefax, surfause, surfatot, buigrnd, surfatra, carpkout, areauset, areauses, surfaext, surfasis, volbuild, cstplid, dcstplid, depreplc, areawhse, areaused, areausea, areadepg, areadepn, areacst, areadcst, surfasid, reserve, tmp_closedt, tmp_opendt, roofid, change_date, change_user, create_date, create_user, update_id, subleasedparkingspaces, legalentity, suitable4disabledpersons, taxfree, carpark, bakeoff, beer, wine, petrolstation, nooftills, noofdepositmachines, servicehotlinenumber, geographicalcoordinatesstorelongtitude, geographicalcoordinatesstorelatitude, openinghoursmondayfrom1, openinghoursmondayto1, openinghoursmondayfrom2, openinghoursmondayto2, openinghourstuesdayfrom1, openinghourstuesdayto1, openinghourstuesdayfrom2, openinghourstuesdayto2, openinghourswednesdayfrom1, openinghourswednesdayto1, openinghourswednesdayfrom2, openinghourswednesdayto2, openinghoursthursdayfrom1, openinghoursthursdayto1, openinghoursthursdayfrom2, openinghoursthursdayto2, openinghoursfridayfrom1, openinghoursfridayto1, openinghoursfridayfrom2, openinghoursfridayto2, openinghourssaturdayfrom1, openinghourssaturdayto1, openinghourssaturdayfrom2, openinghourssaturdayto2, openinghourssundayfrom1, openinghourssundayto1, openinghourssundayfrom2, openinghourssundayto2, specialopeninghoursonmonday, specialopeninghoursontuesday, specialopeninghoursonwednesday, specialopeninghoursonthursday, specialopeninghoursonfriday, specialopeninghoursonsaturday, specialopeninghoursonsunday, specialopeninghourscomment, announcementgrandopening, objectcomment, notation, planopenexternalusage, openexternalusage, plancloseexternalusage, closeexternalusage, objectusageid, relatedobjectno, subaccountno, liquorlicensecommencementdate, reconstructionafterdemolition, demolitiondate, additionalphonenumber, streetlong, dataowner, zones FROM §aisSchema§.dbo.OBJDATA","{'header': {'type_query': 'select', 'number_tables': 1, 'tables': ['§aisSchema§.dbo.OBJDATA'], 'number_subqueries': 0, 'contains_join': False, 'contains_where': False}, 'source': {'source_id': 0, 'source_columns': ['country_sid', 'objno', 'validfrom', 'validto', 'storeno', 'typeid', 'typeid_isos', 'delivcmp', 'delivdt', 'takecmp', 'takedt', 'proprid', 'propid', 'takeobj', 'delivobj', 'areakey', 'gradid', 'employds', 'employsv', 'employst', 'assistant1', 'assistant2', 'assistant3', 'substitut1', 'substitut2', 'substitut3', 'buiapply', 'constrdt', 'planopen', 'opendt', 'planclos', 'closedt', 'ownused', 'zoneyn', 'unsettl', 'saleddt', 'descript', 'street', 'zipcode', 'statzipc', 'town', 'postbox', 'telefon', 'telefax', 'surfause', 'surfatot', 'buigrnd', 'surfatra', 'carpkout', 'areauset', 'areauses', 'surfaext', 'surfasis', 'volbuild', 'cstplid', 'dcstplid', 'depreplc', 'areawhse', 'areaused', 'areausea', 'areadepg', 'areadepn', 'areacst', 'areadcst', 'surfasid', 'reserve', 'tmp_closedt', 'tmp_opendt', 'roofid', 'change_date', 'change_user', 'create_date', 'create_user', 'update_id', 'subleasedparkingspaces', 'legalentity', 'suitable4disabledpersons', 'taxfree', 'carpark', 'bakeoff', 'beer', 'wine', 'petrolstation', 'nooftills', 'noofdepositmachines', 'servicehotlinenumber', 'geographicalcoordinatesstorelongtitude', 'geographicalcoordinatesstorelatitude', 'openinghoursmondayfrom1', 'openinghoursmondayto1', 'openinghoursmondayfrom2', 'openinghoursmondayto2', 'openinghourstuesdayfrom1', 'openinghourstuesdayto1', 'openinghourstuesdayfrom2', 'openinghourstuesdayto2', 'openinghourswednesdayfrom1', 'openinghourswednesdayto1', 'openinghourswednesdayfrom2', 'openinghourswednesdayto2', 'openinghoursthursdayfrom1', 'openinghoursthursdayto1', 'openinghoursthursdayfrom2', 'openinghoursthursdayto2', 'openinghoursfridayfrom1', 'openinghoursfridayto1', 'openinghoursfridayfrom2', 'openinghoursfridayto2', 'openinghourssaturdayfrom1', 'openinghourssaturdayto1', 'openinghourssaturdayfrom2', 'openinghourssaturdayto2', 'openinghourssundayfrom1', 'openinghourssundayto1', 'openinghourssundayfrom2', 'openinghourssundayto2', 'specialopeninghoursonmonday', 'specialopeninghoursontuesday', 'specialopeninghoursonwednesday', 'specialopeninghoursonthursday', 'specialopeninghoursonfriday', 'specialopeninghoursonsaturday', 'specialopeninghoursonsunday', 'specialopeninghourscomment', 'announcementgrandopening', 'objectcomment', 'notation', 'planopenexternalusage', 'openexternalusage', 'plancloseexternalusage', 'closeexternalusage', 'objectusageid', 'relatedobjectno', 'subaccountno', 'liquorlicensecommencementdate', 'reconstructionafterdemolition', 'demolitiondate', 'additionalphonenumber', 'streetlong', 'dataowner', 'zones'], 'source_table': ['§aisSchema§.dbo.OBJDATA', ''], 'source_join': [], 'source_condition': [], 'source_groupby': [], 'source_having': [], 'source_orderby': []}}",['aisSchema'],[],[],XML/wf_extract_ais_objdata.xml,wf_extract_ais_objdata.xml,['BUSINESS_DATE'],"['CASE WHEN COUNTRY_SID NOT IN ', ' MASK_SHOW_LAST_N', 'CASE WHEN COUNTRY_SID NOT IN ', ' MASK_SHOW_LAST_N', 'CASE WHEN COUNTRY_SID NOT IN ', ' MASK_SHOW_LAST_N', 'REGEXP_REPLACE', 'SUBSTR', 'CAST', 'CURRENT_TIMESTAMP']","['DATALAKE_ENV', 'aisSchema']"
+3,"CREATE TABLE IF NOT EXISTS db_work_§DATALAKE_ENV§.ais_areata_tmp_et(
+country_sid STRING,
+areakey STRING,
+areatype STRING,
+areaname STRING,
+sortname STRING,
+isvalid STRING,
+stateid STRING
+) 
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '001'
+LOCATION '/tmp/§DATALAKE_ENV§_extract_ais_areata';
+
+SET hive.exec.dynamic.partition.mode=nonstrict;
+
+SET mapred.output.compression.codec=org.apache.hadoop.io.compress.SnappyCodec; 
+SET parquet.compression=snappy;
+
+--replace entire table (no partitions)
+INSERT OVERWRITE TABLE db_ais_§DATALAKE_ENV§.la_ais_areata_et PARTITION (business_date)
+SELECT 
+country_sid,
+areakey,
+areatype,
+areaname,
+sortname,
+isvalid,
+stateid,
+regexp_replace(substr(CAST(current_timestamp() AS STRING), 1, 10), '-', '') AS business_date
+  FROM db_work_§DATALAKE_ENV§.ais_areata_tmp_et;
+
+MSCK REPAIR TABLE db_ais_§DATALAKE_ENV§.la_ais_areata_et;
+
+DROP TABLE db_work_§DATALAKE_ENV§.ais_areata_tmp_et;","{'header': {'type_query': 'create table', 'number_tables': 1, 'tables': ['db_work_§DATALAKE_ENV§.ais_areata_tmp_et'], 'number_subqueries': 0, 'contains_join': [], 'contains_where': []}, 'table': 'db_work_§DATALAKE_ENV§.ais_areata_tmp_et', 'columns': [{'name': 'country_sid', 'type': ['string', ''], 'null': False}, {'name': 'areakey', 'type': ['string', ''], 'null': False}, {'name': 'areatype', 'type': ['string', ''], 'null': False}, {'name': 'areaname', 'type': ['string', ''], 'null': False}, {'name': 'sortname', 'type': ['string', ''], 'null': False}, {'name': 'isvalid', 'type': ['string', ''], 'null': False}, {'name': 'stateid', 'type': ['string', ''], 'null': False}]}","{'header': {'type_query': 'insert', 'number_tables': 2, 'tables': ['DB_AIS_§DATALAKE_ENV§.LA_AIS_AREATA_ET', 'DB_WORK_§DATALAKE_ENV§.AIS_AREATA_TMP_ET'], 'number_subqueries': 0, 'contains_join': False, 'contains_where': False}, 'target_columns': '', 'target_table': '', 'source': {'source_id': 0, 'source_columns': ['COUNTRY_SID', 'AREAKEY', 'AREATYPE', 'AREANAME', 'SORTNAME', 'ISVALID', 'STATEID', ""REGEXP_REPLACE(SUBSTR(CAST(CURRENT_TIMESTAMP() AS STRING), 1, 10), '-', '') AS BUSINESS_DATE""], 'source_table': ['DB_WORK_§DATALAKE_ENV§.AIS_AREATA_TMP_ET', ''], 'source_join': [], 'source_condition': [], 'source_groupby': [], 'source_having': [], 'source_orderby': []}}",['DATALAKE_ENV'],['BUSINESS_DATE'],"['REGEXP_REPLACE', 'SUBSTR', 'CAST', 'CURRENT_TIMESTAMP']",SQL/process_extracted_ais_areata.sql,process_extracted_ais_areata.sql,AREATA," SELECT country_sid, areakey, areatype, areaname, sortname, isvalid, stateid FROM §aisSchema§.dbo.AREATA","{'header': {'type_query': 'select', 'number_tables': 1, 'tables': ['§aisSchema§.dbo.AREATA'], 'number_subqueries': 0, 'contains_join': False, 'contains_where': False}, 'source': {'source_id': 0, 'source_columns': ['country_sid', 'areakey', 'areatype', 'areaname', 'sortname', 'isvalid', 'stateid'], 'source_table': ['§aisSchema§.dbo.AREATA', ''], 'source_join': [], 'source_condition': [], 'source_groupby': [], 'source_having': [], 'source_orderby': []}}",['aisSchema'],[],[],XML/wf_extract_ais_areata.xml,wf_extract_ais_areata.xml,['BUSINESS_DATE'],"['REGEXP_REPLACE', 'SUBSTR', 'CAST', 'CURRENT_TIMESTAMP']","['DATALAKE_ENV', 'aisSchema']"
+4,"CREATE TABLE IF NOT EXISTS db_work_§DATALAKE_ENV§.ais_objstatu_tmp_et(
+country_sid STRING,
+objno STRING,
+validfrom STRING,
+validto STRING,
+divno STRING,
+status STRING,
+change_date STRING,
+change_user STRING,
+create_date STRING,
+create_user STRING,
+update_id STRING
+) 
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '001'
+LOCATION '/tmp/§DATALAKE_ENV§_extract_ais_objstatu';
+
+SET hive.exec.dynamic.partition.mode=nonstrict;
+
+SET mapred.output.compression.codec=org.apache.hadoop.io.compress.SnappyCodec; 
+SET parquet.compression=snappy;
+
+--replace entire table (no partitions)
+INSERT OVERWRITE TABLE db_ais_§DATALAKE_ENV§.la_ais_objstatu_et PARTITION (business_date)
+SELECT 
+country_sid,
+objno,
+validfrom,
+validto,
+divno,
+status,
+change_date,
+change_user,
+create_date,
+create_user,
+update_id,
+regexp_replace(substr(CAST(current_timestamp() AS STRING), 1, 10), '-', '') AS business_date
+  FROM db_work_§DATALAKE_ENV§.ais_objstatu_tmp_et;
+
+MSCK REPAIR TABLE db_ais_§DATALAKE_ENV§.la_ais_objstatu_et;
+
+DROP TABLE db_work_§DATALAKE_ENV§.ais_objstatu_tmp_et;","{'header': {'type_query': 'create table', 'number_tables': 1, 'tables': ['db_work_§DATALAKE_ENV§.ais_objstatu_tmp_et'], 'number_subqueries': 0, 'contains_join': [], 'contains_where': []}, 'table': 'db_work_§DATALAKE_ENV§.ais_objstatu_tmp_et', 'columns': [{'name': 'country_sid', 'type': ['string', ''], 'null': False}, {'name': 'objno', 'type': ['string', ''], 'null': False}, {'name': 'validfrom', 'type': ['string', ''], 'null': False}, {'name': 'validto', 'type': ['string', ''], 'null': False}, {'name': 'divno', 'type': ['string', ''], 'null': False}, {'name': 'status', 'type': ['string', ''], 'null': False}, {'name': 'change_date', 'type': ['string', ''], 'null': False}, {'name': 'change_user', 'type': ['string', ''], 'null': False}, {'name': 'create_date', 'type': ['string', ''], 'null': False}, {'name': 'create_user', 'type': ['string', ''], 'null': False}, {'name': 'update_id', 'type': ['string', ''], 'null': False}]}","{'header': {'type_query': 'insert', 'number_tables': 2, 'tables': ['DB_AIS_§DATALAKE_ENV§.LA_AIS_OBJSTATU_ET', 'DB_WORK_§DATALAKE_ENV§.AIS_OBJSTATU_TMP_ET'], 'number_subqueries': 0, 'contains_join': False, 'contains_where': False}, 'target_columns': '', 'target_table': '', 'source': {'source_id': 0, 'source_columns': ['COUNTRY_SID', 'OBJNO', 'VALIDFROM', 'VALIDTO', 'DIVNO', 'STATUS', 'CHANGE_DATE', 'CHANGE_USER', 'CREATE_DATE', 'CREATE_USER', 'UPDATE_ID', ""REGEXP_REPLACE(SUBSTR(CAST(CURRENT_TIMESTAMP() AS STRING), 1, 10), '-', '') AS BUSINESS_DATE""], 'source_table': ['DB_WORK_§DATALAKE_ENV§.AIS_OBJSTATU_TMP_ET', ''], 'source_join': [], 'source_condition': [], 'source_groupby': [], 'source_having': [], 'source_orderby': []}}",['DATALAKE_ENV'],['BUSINESS_DATE'],"['REGEXP_REPLACE', 'SUBSTR', 'CAST', 'CURRENT_TIMESTAMP']",SQL/process_extracted_ais_objstatu.sql,process_extracted_ais_objstatu.sql,OBJSTATU," SELECT country_sid, objno, validfrom, validto, divno, status, change_date, change_user, create_date, create_user, update_id FROM §aisSchema§.dbo.OBJSTATU","{'header': {'type_query': 'select', 'number_tables': 1, 'tables': ['§aisSchema§.dbo.OBJSTATU'], 'number_subqueries': 0, 'contains_join': False, 'contains_where': False}, 'source': {'source_id': 0, 'source_columns': ['country_sid', 'objno', 'validfrom', 'validto', 'divno', 'status', 'change_date', 'change_user', 'create_date', 'create_user', 'update_id'], 'source_table': ['§aisSchema§.dbo.OBJSTATU', ''], 'source_join': [], 'source_condition': [], 'source_groupby': [], 'source_having': [], 'source_orderby': []}}",['aisSchema'],[],[],XML/wf_extract_ais_objstatu.xml,wf_extract_ais_objstatu.xml,['BUSINESS_DATE'],"['REGEXP_REPLACE', 'SUBSTR', 'CAST', 'CURRENT_TIMESTAMP']","['DATALAKE_ENV', 'aisSchema']"
+5,"CREATE TABLE IF NOT EXISTS db_work_§DATALAKE_ENV§.ais_countries_tmp_et(
+country_sid STRING,
+country STRING,
+description STRING,
+telefonprefix STRING,
+ssortid STRING,
+nsortid STRING,
+countryculture STRING,
+countrycode STRING,
+countryid STRING,
+ioc_code STRING,
+topleveldomain STRING,
+is_europe STRING,
+currencycode_sid STRING,
+currencycode STRING,
+currdescription STRING,
+currunit STRING,
+language STRING
+) 
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '001'
+LOCATION '/data_§DATALAKE_ENV§/hive/db_work_§DATALAKE_ENV§/§DATALAKE_ENV§_extract_ais_countries';
+
+SET hive.exec.dynamic.partition.mode=nonstrict;
+
+--replace entire table (no partitions)
+INSERT OVERWRITE TABLE db_ais_§DATALAKE_ENV§.la_ais_countries_et PARTITION (business_date)
+SELECT 
+country_sid,
+country,
+description,
+telefonprefix,
+ssortid,
+nsortid,
+countryculture,
+countrycode,
+countryid,
+ioc_code,
+topleveldomain,
+is_europe,
+currencycode_sid,
+currencycode,
+currdescription,
+currunit,
+language,
+regexp_replace(substr(CAST(current_timestamp() AS STRING), 1, 10), '-', '') AS business_date
+  FROM db_work_§DATALAKE_ENV§.ais_countries_tmp_et;
+
+MSCK REPAIR TABLE db_ais_§DATALAKE_ENV§.la_ais_countries_et;
+
+DROP TABLE db_work_§DATALAKE_ENV§.ais_countries_tmp_et;","{'header': {'type_query': 'create table', 'number_tables': 1, 'tables': ['db_work_§DATALAKE_ENV§.ais_countries_tmp_et'], 'number_subqueries': 0, 'contains_join': [], 'contains_where': []}, 'table': 'db_work_§DATALAKE_ENV§.ais_countries_tmp_et', 'columns': [{'name': 'country_sid', 'type': ['string', ''], 'null': False}, {'name': 'country', 'type': ['string', ''], 'null': False}, {'name': 'description', 'type': ['string', ''], 'null': False}, {'name': 'telefonprefix', 'type': ['string', ''], 'null': False}, {'name': 'ssortid', 'type': ['string', ''], 'null': False}, {'name': 'nsortid', 'type': ['string', ''], 'null': False}, {'name': 'countryculture', 'type': ['string', ''], 'null': False}, {'name': 'countrycode', 'type': ['string', ''], 'null': False}, {'name': 'countryid', 'type': ['string', ''], 'null': False}, {'name': 'ioc_code', 'type': ['string', ''], 'null': False}, {'name': 'topleveldomain', 'type': ['string', ''], 'null': False}, {'name': 'is_europe', 'type': ['string', ''], 'null': False}, {'name': 'currencycode_sid', 'type': ['string', ''], 'null': False}, {'name': 'currencycode', 'type': ['string', ''], 'null': False}, {'name': 'currdescription', 'type': ['string', ''], 'null': False}, {'name': 'currunit', 'type': ['string', ''], 'null': False}, {'name': 'language', 'type': ['string', ''], 'null': False}]}","{'header': {'type_query': 'insert', 'number_tables': 2, 'tables': ['DB_AIS_§DATALAKE_ENV§.LA_AIS_COUNTRIES_ET', 'DB_WORK_§DATALAKE_ENV§.AIS_COUNTRIES_TMP_ET'], 'number_subqueries': 0, 'contains_join': False, 'contains_where': False}, 'target_columns': '', 'target_table': '', 'source': {'source_id': 0, 'source_columns': ['COUNTRY_SID', 'COUNTRY', 'DESCRIPTION', 'TELEFONPREFIX', 'SSORTID', 'NSORTID', 'COUNTRYCULTURE', 'COUNTRYCODE', 'COUNTRYID', 'IOC_CODE', 'TOPLEVELDOMAIN', 'IS_EUROPE', 'CURRENCYCODE_SID', 'CURRENCYCODE', 'CURRDESCRIPTION', 'CURRUNIT', 'LANGUAGE', ""REGEXP_REPLACE(SUBSTR(CAST(CURRENT_TIMESTAMP() AS STRING), 1, 10), '-', '') AS BUSINESS_DATE""], 'source_table': ['DB_WORK_§DATALAKE_ENV§.AIS_COUNTRIES_TMP_ET', ''], 'source_join': [], 'source_condition': [], 'source_groupby': [], 'source_having': [], 'source_orderby': []}}",['DATALAKE_ENV'],['BUSINESS_DATE'],"['REGEXP_REPLACE', 'SUBSTR', 'CAST', 'CURRENT_TIMESTAMP']",SQL/process_extracted_ais_countries.sql,process_extracted_ais_countries.sql,COUNTRIES," SELECT country_sid, country, description, telefonprefix, ssortid, nsortid, countryculture, countrycode, countryid, ioc_code, topleveldomain, is_europe, currencycode_sid, currencycode, currdescription, currunit, language FROM §aisSchema§.dbo.COUNTRIES","{'header': {'type_query': 'select', 'number_tables': 1, 'tables': ['§aisSchema§.dbo.COUNTRIES'], 'number_subqueries': 0, 'contains_join': False, 'contains_where': False}, 'source': {'source_id': 0, 'source_columns': ['country_sid', 'country', 'description', 'telefonprefix', 'ssortid', 'nsortid', 'countryculture', 'countrycode', 'countryid', 'ioc_code', 'topleveldomain', 'is_europe', 'currencycode_sid', 'currencycode', 'currdescription', 'currunit', 'language'], 'source_table': ['§aisSchema§.dbo.COUNTRIES', ''], 'source_join': [], 'source_condition': [], 'source_groupby': [], 'source_having': [], 'source_orderby': []}}",['aisSchema'],[],[],XML/wf_extract_ais_countries.xml,wf_extract_ais_countries.xml,['BUSINESS_DATE'],"['REGEXP_REPLACE', 'SUBSTR', 'CAST', 'CURRENT_TIMESTAMP']","['DATALAKE_ENV', 'aisSchema']"
